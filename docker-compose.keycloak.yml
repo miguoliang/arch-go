@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  iam:
+    image: quay.io/keycloak/keycloak:23.0.3
+    command: [ 'start-dev', '--http-relative-path=/auth' ]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - 8080:8080
+  mail:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025

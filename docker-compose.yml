@@ -1,0 +1,16 @@
+version: '3.8'
+
+include:
+  - docker-compose.graylog.yml
+  - docker-compose.keycloak.yml
+  - docker-compose.metrics.yml
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
