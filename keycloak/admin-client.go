@@ -1,7 +1,8 @@
-package main
+package keycloak
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/miguoliang/keycloakadminclient"
 	"io"
@@ -22,10 +23,11 @@ const (
 )
 
 var (
-	mutex        sync.Mutex
-	accessToken  string
-	refreshToken string
-	expiryTime   time.Time
+	mutex             sync.Mutex
+	accessToken       string
+	refreshToken      string
+	expiryTime        time.Time
+	keycloakApiClient *keycloakadminclient.APIClient
 )
 
 func refreshAccessToken() {
@@ -38,39 +40,8 @@ func refreshAccessToken() {
 	}
 
 	if time.Now().Before(expiryTime.Add(-5 * time.Minute)) { // Refresh before expiry - adjust time as needed
-		tokenURL := fmt.Sprintf("%s/auth/realms/%s/protocol/openid-connect/token", keycloakServerURL, realmName)
-
-		formData := url.Values{}
-		formData.Set("grant_type", "refresh_token") // Assuming you have a refresh token mechanism
-		formData.Set("client_id", clientID)
-		formData.Set("refresh_token", refreshToken)
-
-		requestBody := strings.NewReader(formData.Encode())
-
-		req, err := http.NewRequest(http.MethodPost, tokenURL, requestBody)
+		tokenData, err := retrieveTokenFromRemote()
 		if err != nil {
-			log.Fatalf(err.Error())
-			return
-		}
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			log.Fatalf(err.Error())
-			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			log.Fatalf("failed to refresh token: status code %d", resp.StatusCode)
-			return
-		}
-
-		var tokenData map[string]interface{}
-		err = json.NewDecoder(resp.Body).Decode(&tokenData)
-		if err != nil {
-			log.Fatalf(err.Error())
 			return
 		}
 
@@ -97,6 +68,45 @@ func refreshAccessToken() {
 	}
 }
 
+func retrieveTokenFromRemote() (map[string]interface{}, error) {
+	tokenURL := fmt.Sprintf("%s/auth/realms/%s/protocol/openid-connect/token", keycloakServerURL, realmName)
+
+	formData := url.Values{}
+	formData.Set("grant_type", "refresh_token") // Assuming you have a refresh token mechanism
+	formData.Set("client_id", clientID)
+	formData.Set("refresh_token", refreshToken)
+
+	requestBody := strings.NewReader(formData.Encode())
+
+	req, err := http.NewRequest(http.MethodPost, tokenURL, requestBody)
+	if err != nil {
+		log.Fatalf(err.Error())
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf(err.Error())
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("failed to refresh token: status code %d", resp.StatusCode)
+		return nil, err
+	}
+
+	var tokenData map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&tokenData)
+	if err != nil {
+		log.Fatalf(err.Error())
+		return nil, err
+	}
+	return tokenData, nil
+}
+
 func initAccessToken() {
 
 	form := url.Values{}
@@ -105,7 +115,7 @@ func initAccessToken() {
 	form.Add("password", password)
 	form.Add("grant_type", "password")
 
-	endpoint := fmt.Sprintf("http://%s/realms/%s/protocol/openid-connect/token", keycloakServerURL, realmName)
+	endpoint := fmt.Sprintf("%s/realms/%s/protocol/openid-connect/token", keycloakServerURL, realmName)
 	resp, err := http.PostForm(endpoint, form)
 	if err != nil {
 		log.Fatalf(err.Error())
@@ -151,4 +161,17 @@ func GetAdminClient() *keycloakadminclient.APIClient {
 	}
 	keycloakApiClient = keycloakadminclient.NewAPIClient(configuration)
 	return keycloakApiClient
+}
+
+func CheckResponse(h *http.Response, err error) (int, error) {
+	if err == nil {
+		return 0, nil
+	}
+
+	var apiError *keycloakadminclient.GenericOpenAPIError
+	if errors.As(err, &apiError) {
+		return h.StatusCode, err
+	}
+
+	return 500, err
 }

@@ -6,7 +6,7 @@ func GetRoleHandler(c *gin.Context) {
 	// do something
 }
 
-func GetRolesHandler(c *gin.Context) {
+func ListRolesHandler(c *gin.Context) {
 	// do something
 }
 
@@ -14,7 +14,7 @@ func CreateRoleHandler(c *gin.Context) {
 	// do something
 }
 
-func SetRolePermissionsHandler(c *gin.Context) {
+func AssignPermissionsToRoleHandler(c *gin.Context) {
 	// do something
 }
 
@@ -26,6 +26,6 @@ func RenameRoleHandler(c *gin.Context) {
 	// do something
 }
 
-func HasRoleHandler(c *gin.Context) {
+func CheckRoleHandler(c *gin.Context) {
 	// do something
 }

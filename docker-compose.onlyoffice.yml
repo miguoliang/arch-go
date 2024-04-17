@@ -1,0 +1,30 @@
+services:
+  onlyoffice-document-server:
+    image: onlyoffice/documentserver
+    restart: always
+    environment:
+      - ALLOW_PRIVATE_IP_ADDRESS=true
+      - JWT_ENABLED=false
+    ports:
+      - 8000:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  s3:
+    image: minio/minio
+    command: [ 'server', '/data', '--console-address', ':9001' ]
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - s3_data:/data
+  mc:
+    image: minio/mc
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add minio http://s3:9000 minioadmin minioadmin &&
+      /usr/bin/mc mb minio/my-bucket
+      "
+    depends_on:
+      - s3
+volumes:
+  s3_data:
