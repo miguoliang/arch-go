@@ -2,8 +2,8 @@ package resource
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/miguoliang/arch-go/dto"
-	"github.com/miguoliang/arch-go/keycloak"
+	"github.com/miguoliang/arch-go/internal/dto"
+	"github.com/miguoliang/arch-go/internal/keycloak"
 	"github.com/miguoliang/keycloakadminclient"
 	"net/http"
 )
@@ -46,6 +46,16 @@ func ListGroupsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.GroupList{Items: groups})
 }
 
+// GetGroupHandler Get group
+// @Summary Get group
+// @Description Get group
+// @Tags group
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Group ID"
+// @Success 200 {object} dto.Group
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /groups/{id} [get]
 func GetGroupHandler(c *gin.Context) {
 	admin := keycloak.GetAdminClient()
 	groupId := c.Param("id")
@@ -68,6 +78,16 @@ func GetGroupHandler(c *gin.Context) {
 	})
 }
 
+// CreateGroupHandler Create group
+// @Summary Create group
+// @Description Create group
+// @Tags group
+// @Accept  json
+// @Produce  json
+// @Param group body dto.Group true "Group"
+// @Success 200 {object} string
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /groups [post]
 func CreateGroupHandler(c *gin.Context) {
 
 	admin := keycloak.GetAdminClient()
@@ -96,6 +116,17 @@ func CreateGroupHandler(c *gin.Context) {
 	c.JSON(200, "")
 }
 
+// RenameGroupHandler Rename group
+// @Summary Rename group
+// @Description Rename group
+// @Tags group
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Group ID"
+// @Param group body dto.Group true "Group"
+// @Success 200 {object} string
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /groups/{id} [put]
 func RenameGroupHandler(c *gin.Context) {
 	admin := keycloak.GetAdminClient()
 	groupId := c.Param("id")
