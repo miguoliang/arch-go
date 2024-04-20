@@ -58,7 +58,7 @@ func GetGroupHandler(c *gin.Context) {
 // @Tags group
 // @Accept  json
 // @Produce  json
-// @Param group body dto.Group true "Group"
+// @Param group body keycloakadminclient.GroupRepresentation true "Group"
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups [post]
 func CreateGroupHandler(c *gin.Context) {
@@ -83,7 +83,7 @@ func CreateGroupHandler(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Group ID"
-// @Param group body dto.Group true "Group"
+// @Param group body keycloakadminclient.GroupRepresentation true "Group"
 // @Success 200
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups/{id} [put]

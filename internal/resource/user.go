@@ -36,7 +36,7 @@ func GetUserHandler(c *gin.Context) {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Param user body UserRepresentation true "User"
+// @Param user body keycloakadminclient.UserRepresentation true "User"
 // @Success 201 {object} dto.CreatedResponse
 // @Failure 400 {object} dto.ErrorResponse
 // @Failure 409 {object} dto.ErrorResponse
@@ -63,7 +63,7 @@ func CreateUserHandler(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
-// @Param user body UserRepresentation true "User"
+// @Param user body keycloakadminclient.UserRepresentation true "User"
 // @Success 200 {object} keycloakadminclient.UserRepresentation
 // @Failure 400 {object} dto.ErrorResponse
 // @Failure 404 {object} dto.ErrorResponse
