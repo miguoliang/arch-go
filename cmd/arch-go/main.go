@@ -31,26 +31,21 @@ func routes() *gin.Engine {
 
 	api.Group("/users").
 		DELETE("/:id", resource.DeleteUserHandler).
-		DELETE("/:id/group/:groupId", resource.LeaveGroupHandler).
-		DELETE("/:id/role/:roleId", resource.RevokeRoleHandler).
+		DELETE("/:id/groups/:groupId", resource.LeaveGroupHandler).
 		GET("/", resource.ListUsersHandler).
 		GET("/:id", resource.GetUserHandler).
 		GET("/:id/groups", resource.ListGroupsByUserHandler).
-		GET("/:id/roles", resource.ListRolesByUserHandler).
-		HEAD("/:username", resource.CheckUserHandler).
+		HEAD("/", resource.CheckUserHandler).
 		POST("/", resource.CreateUserHandler).
-		POST("/:id/group/:groupId", resource.JoinGroupHandler).
-		POST("/:id/role/:roleId", resource.AssignRoleHandler).
+		POST("/:id/groups/:groupId", resource.JoinGroupHandler).
 		PUT("/:id", resource.UpdateUserHandler)
 
 	api.Group("/groups").
 		DELETE("/:id", resource.DeleteGroupHandler).
 		GET("/", resource.ListGroupsHandler).
 		GET("/:id", resource.GetGroupHandler).
-		HEAD("/", resource.CheckGroupHandler).
 		POST("/", resource.CreateGroupHandler).
-		POST("/:id/rename", resource.RenameGroupHandler).
-		POST("/:id/move", resource.MoveGroupHandler)
+		PUT("/:id", resource.UpdateGroupHandler)
 
 	api.Group("/roles").
 		DELETE("/:id", resource.DeleteRoleHandler).
@@ -58,8 +53,7 @@ func routes() *gin.Engine {
 		GET("/:id", resource.GetRoleHandler).
 		HEAD("/", resource.CheckRoleHandler).
 		POST("/", resource.CreateRoleHandler).
-		POST("/:id/rename", resource.RenameRoleHandler).
-		POST("/:id/permissions", resource.AssignPermissionsToRoleHandler)
+		POST("/:id", resource.UpdateRoleHandler)
 
 	api.POST("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{

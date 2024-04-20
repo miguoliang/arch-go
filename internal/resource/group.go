@@ -18,32 +18,17 @@ const (
 // @Tags group
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} dto.GroupList
+// @Success 200 {array} keycloakadminclient.GroupRepresentation
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups [get]
 func ListGroupsHandler(c *gin.Context) {
-	admin := keycloak.GetAdminClient()
-	groupRepresentations, h, err := admin.GroupsAPI.AdminRealmsRealmGroupsGet(c, RealmName).Execute()
-
-	if h != nil {
-		defer h.Body.Close()
-	}
-
-	statusCode, err := keycloak.CheckResponse(h, err)
+	service := keycloak.NewGroupService(RealmName)
+	groups, statusCode, err := service.ListGroups()
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	groups := make([]dto.Group, len(groupRepresentations))
-	for i, group := range groupRepresentations {
-		groups[i] = dto.Group{
-			Id:   *group.Id,
-			Name: *group.Name,
-			Path: *group.Path,
-		}
-	}
-	c.JSON(http.StatusOK, dto.GroupList{Items: groups})
+	c.JSON(http.StatusOK, groups)
 }
 
 // GetGroupHandler Get group
@@ -53,29 +38,18 @@ func ListGroupsHandler(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Group ID"
-// @Success 200 {object} dto.Group
+// @Success 200 {object} keycloakadminclient.GroupRepresentation
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups/{id} [get]
 func GetGroupHandler(c *gin.Context) {
-	admin := keycloak.GetAdminClient()
+	service := keycloak.NewGroupService(RealmName)
 	groupId := c.Param("id")
-	group, h, err := admin.GroupsAPI.AdminRealmsRealmGroupsGroupIdGet(c, RealmName, groupId).Execute()
-
-	if h != nil {
-		defer h.Body.Close()
-	}
-
-	statusCode, err := keycloak.CheckResponse(h, err)
+	group, statusCode, err := service.GetGroup(groupId)
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, dto.Group{
-		Id:   groupId,
-		Name: *group.Name,
-		Path: *group.Path,
-	})
+	c.JSON(http.StatusOK, group)
 }
 
 // CreateGroupHandler Create group
@@ -85,85 +59,67 @@ func GetGroupHandler(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param group body dto.Group true "Group"
-// @Success 200 {object} string
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups [post]
 func CreateGroupHandler(c *gin.Context) {
-
-	admin := keycloak.GetAdminClient()
-	group := dto.Group{}
+	group := keycloakadminclient.GroupRepresentation{}
 	if err := c.ShouldBindJSON(&group); err != nil {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	groupRepresentation := keycloakadminclient.GroupRepresentation{
-		Name: &group.Name,
-		Path: &group.Path,
-	}
-	h, err := admin.GroupsAPI.AdminRealmsRealmGroupsPost(c, RealmName).
-		GroupRepresentation(groupRepresentation).
-		Execute()
-	if h != nil {
-		defer h.Body.Close()
-	}
-	statusCode, err := keycloak.CheckResponse(h, err)
+	service := keycloak.NewGroupService(RealmName)
+	groupId, statusCode, err := service.CreateGroup(&group)
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	c.JSON(200, "")
+	c.JSON(statusCode, dto.CreatedResponse{Id: groupId})
 }
 
-// RenameGroupHandler Rename group
-// @Summary Rename group
-// @Description Rename group
+// UpdateGroupHandler Update group
+// @Summary Update group
+// @Description Update group
 // @Tags group
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Group ID"
 // @Param group body dto.Group true "Group"
-// @Success 200 {object} string
+// @Success 200
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups/{id} [put]
-func RenameGroupHandler(c *gin.Context) {
-	admin := keycloak.GetAdminClient()
-	groupId := c.Param("id")
-	group := dto.Group{}
+func UpdateGroupHandler(c *gin.Context) {
+	group := keycloakadminclient.GroupRepresentation{}
 	if err := c.ShouldBindJSON(&group); err != nil {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	groupRepresentation := keycloakadminclient.GroupRepresentation{
-		Name: &group.Name,
-		Path: &group.Path,
-	}
-
-	h, err := admin.GroupsAPI.AdminRealmsRealmGroupsGroupIdPut(c, RealmName, groupId).
-		GroupRepresentation(groupRepresentation).
-		Execute()
-	if h != nil {
-		defer h.Body.Close()
-	}
-	statusCode, err := keycloak.CheckResponse(h, err)
+	service := keycloak.NewGroupService(RealmName)
+	groupId := c.Param("id")
+	statusCode, err := service.UpdateGroup(groupId, &group)
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	c.JSON(200, "")
+	c.Status(statusCode)
 }
 
-func MoveGroupHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "MoveGroupHandler"})
-}
-
+// DeleteGroupHandler Delete group
+// @Summary Delete group
+// @Description Delete group
+// @Tags group
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Group ID"
+// @Success 200
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /groups/{id} [delete]
 func DeleteGroupHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "DeleteGroupHandler"})
-}
-
-func CheckGroupHandler(c *gin.Context) {
-
+	service := keycloak.NewGroupService(RealmName)
+	groupId := c.Param("id")
+	statusCode, err := service.DeleteGroup(groupId)
+	if err != nil {
+		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
+		return
+	}
+	c.Status(statusCode)
 }

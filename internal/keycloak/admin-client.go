@@ -2,7 +2,6 @@ package keycloak
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/miguoliang/keycloakadminclient"
 	"io"
@@ -165,11 +164,13 @@ func GetAdminClient() *keycloakadminclient.APIClient {
 
 func CheckResponse(h *http.Response, err error) (int, error) {
 	if err == nil {
-		return 0, nil
+		if h != nil {
+			return h.StatusCode, nil
+		}
+		return 200, nil
 	}
 
-	var apiError *keycloakadminclient.GenericOpenAPIError
-	if errors.As(err, &apiError) {
+	if h != nil {
 		return h.StatusCode, err
 	}
 
