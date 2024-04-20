@@ -23,7 +23,7 @@ type groupService struct {
 // CreateGroup creates a new group.
 func (g *groupService) CreateGroup(group *keycloakadminclient.GroupRepresentation) (string, int, error) {
 	h, err := g.keycloakClient.GroupsAPI.
-		AdminRealmsRealmGroupsPost(context.TODO(), g.realmName).
+		AdminRealmsRealmGroupsPost(context.Background(), g.realmName).
 		GroupRepresentation(*group).
 		Execute()
 	if h != nil {
@@ -50,7 +50,7 @@ func (g *groupService) CreateGroup(group *keycloakadminclient.GroupRepresentatio
 // GetGroup gets a group by its id.
 func (g *groupService) GetGroup(groupId string) (*keycloakadminclient.GroupRepresentation, int, error) {
 	groupRepresentation, h, err := g.keycloakClient.GroupsAPI.
-		AdminRealmsRealmGroupsGroupIdGet(context.TODO(), g.realmName, groupId).
+		AdminRealmsRealmGroupsGroupIdGet(context.Background(), g.realmName, groupId).
 		Execute()
 	if h != nil {
 		defer h.Body.Close()
@@ -65,7 +65,7 @@ func (g *groupService) GetGroup(groupId string) (*keycloakadminclient.GroupRepre
 // UpdateGroup updates a group.
 func (g *groupService) UpdateGroup(groupId string, group *keycloakadminclient.GroupRepresentation) (int, error) {
 	h, err := g.keycloakClient.GroupsAPI.
-		AdminRealmsRealmGroupsGroupIdPut(context.TODO(), g.realmName, groupId).
+		AdminRealmsRealmGroupsGroupIdPut(context.Background(), g.realmName, groupId).
 		GroupRepresentation(*group).
 		Execute()
 	if h != nil {
@@ -77,7 +77,7 @@ func (g *groupService) UpdateGroup(groupId string, group *keycloakadminclient.Gr
 // DeleteGroup deletes a group by its id.
 func (g *groupService) DeleteGroup(groupId string) (int, error) {
 	h, err := g.keycloakClient.GroupsAPI.
-		AdminRealmsRealmGroupsGroupIdDelete(context.TODO(), g.realmName, groupId).
+		AdminRealmsRealmGroupsGroupIdDelete(context.Background(), g.realmName, groupId).
 		Execute()
 	if h != nil {
 		defer h.Body.Close()
@@ -88,7 +88,7 @@ func (g *groupService) DeleteGroup(groupId string) (int, error) {
 // ListGroups gets all groups.
 func (g *groupService) ListGroups() (*[]keycloakadminclient.GroupRepresentation, int, error) {
 	groups, h, err := g.keycloakClient.GroupsAPI.
-		AdminRealmsRealmGroupsGet(context.TODO(), g.realmName).
+		AdminRealmsRealmGroupsGet(context.Background(), g.realmName).
 		Execute()
 	if h != nil {
 		defer h.Body.Close()

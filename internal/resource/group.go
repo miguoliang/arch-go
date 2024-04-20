@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	RealmName = "custom"
+	RealmName = "master"
 )
 
 // ListGroupsHandler List groups

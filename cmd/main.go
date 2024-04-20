@@ -13,17 +13,7 @@ const (
 	graylogAddr = "localhost:12201"
 )
 
-// @title Arch-Go API
-// @description This is the API for Arch-Go
-// @version 1.0
-// @host localhost:8080
-// @BasePath /api
-// @schemes http
-// @schemes https
-// @contact.name Guoliang Mi
-// @contact.email boymgl@qq.com
-// @contact.url https://miguoliang.com
-func routes() *gin.Engine {
+func setupRoutes() *gin.Engine {
 
 	r := gin.Default()
 
@@ -64,11 +54,21 @@ func routes() *gin.Engine {
 	return r
 }
 
+// @title Arch-Go API
+// @description This is the API for Arch-Go
+// @version 1.0
+// @host localhost:8080
+// @BasePath /api
+// @schemes http
+// @schemes https
+// @contact.name Guoliang Mi
+// @contact.email boymgl@qq.com
+// @contact.url https://miguoliang.com
 func main() {
 
 	setupLog()
 
-	r := routes()
+	r := setupRoutes()
 
 	err := r.Run("0.0.0.0:8081")
 	if err != nil {
