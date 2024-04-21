@@ -15,7 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          fetch-depth: 0
+          
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
@@ -25,8 +27,13 @@ jobs:
       - name: Build
         run: go build -v -o ./build/arch-go ./cmd/
 
+      - name: Cache Docker images.
+        uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/docker-compose.keycloak.yml') }}
+
       - name: Prepare for testing
-        run: docker compose -f deployments/docker-compose.keycloak.yml up -d
+        run: docker-compose -f deployments/docker-compose.keycloak.yml up -d
 
       - name: Test
         run: go test -v ./test
