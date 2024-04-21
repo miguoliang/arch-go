@@ -35,7 +35,7 @@ jobs:
       - name: Prepare for testing
         run: docker-compose -f deployments/docker-compose.keycloak.yml up -d
 
-      - name: Wait for healthchecks
+      - name: Wait for health checks
         run: timeout 60s sh -c 'until docker ps | grep keycloak | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
 
       - name: Test
