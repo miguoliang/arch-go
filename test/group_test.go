@@ -68,7 +68,7 @@ func (s *GroupTestSuite) TestDeleteGroupNotFoundIfNotExists() {
 	s.Equal(http.StatusNotFound, w.Code)
 }
 
-func (s *GroupTestSuite) TestGetGroupSucceedIfExists() {
+func (s *GroupTestSuite) TestGetGroupSucceed() {
 
 	group := &keycloakadminclient.GroupRepresentation{
 		Name: str.Ptr(s.T().Name()),
@@ -87,6 +87,28 @@ func (s *GroupTestSuite) TestGetGroupSucceedIfExists() {
 	s.NoError(err)
 	s.Equal(created.Id, got.GetId())
 	s.Equal(group.GetName(), got.GetName())
+}
+
+func (s *GroupTestSuite) TestGetGroupNotFound() {
+
+	w := s.Get("/api/v1/groups/123")
+	s.Equal(http.StatusNotFound, w.Code)
+}
+
+func (s *GroupTestSuite) TestListGroupsSucceed() {
+
+	group := &keycloakadminclient.GroupRepresentation{
+		Name: str.Ptr(s.T().Name()),
+	}
+	w := s.Post("/api/v1/groups", group)
+	s.Equal(http.StatusCreated, w.Code)
+
+	w = s.Get("/api/v1/groups")
+	s.Equal(http.StatusOK, w.Code)
+	var got []keycloakadminclient.GroupRepresentation
+	err := json.Unmarshal(w.Body.Bytes(), &got)
+	s.NoError(err)
+	s.NotEmpty(got)
 }
 
 func TestGroupTestSuite(t *testing.T) {

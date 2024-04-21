@@ -14,7 +14,6 @@ type RoleService interface {
 	CreateRole(role *keycloakadminclient.RoleRepresentation) (string, int, error)
 	UpdateRole(roleId string, role *keycloakadminclient.RoleRepresentation) (*keycloakadminclient.RoleRepresentation, int, error)
 	DeleteRole(roleId string) (int, error)
-	CheckRoleName(roleName string) (int, error)
 }
 
 type roleService struct {
@@ -121,17 +120,4 @@ func (r *roleService) DeleteRole(roleId string) (int, error) {
 		return statusCode, err
 	}
 	return statusCode, nil
-}
-
-func (r *roleService) CheckRoleName(roleName string) (int, error) {
-	roles, _, err := r.ListRoles()
-	if err != nil {
-		return 500, err
-	}
-	for _, role := range *roles {
-		if *role.Name == roleName {
-			return 409, fmt.Errorf("role name %s already exists", roleName)
-		}
-	}
-	return 200, nil
 }

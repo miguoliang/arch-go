@@ -51,7 +51,14 @@ func (s *Suite) deleteCustomRealm() {
 	defer response.Body.Close()
 }
 
-func (s *GroupTestSuite) Get(url string) *httptest.ResponseRecorder {
+func (s *Suite) Head(url string) *httptest.ResponseRecorder {
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("HEAD", url, nil)
+	s.r.ServeHTTP(w, req)
+	return w
+}
+
+func (s *Suite) Get(url string) *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", url, nil)
 	s.r.ServeHTTP(w, req)

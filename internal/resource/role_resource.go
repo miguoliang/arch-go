@@ -20,7 +20,7 @@ import (
 // @Router /roles/{roleId} [get]
 func GetRoleHandler(c *gin.Context) {
 	service := keycloak.NewRoleService(CustomRealmName)
-	roleId := c.Param("roleId")
+	roleId := c.Param("id")
 	role, statusCode, err := service.GetRoleById(roleId)
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
@@ -139,6 +139,10 @@ func UpdateRoleHandler(c *gin.Context) {
 func CheckRoleHandler(c *gin.Context) {
 	service := keycloak.NewRoleService(CustomRealmName)
 	roleName := c.Query("roleName")
-	statusCode, _ := service.CheckRoleName(roleName)
-	c.Status(statusCode)
+	_, statusCode, err := service.GetRoleByName(roleName)
+	if err != nil {
+		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
+		return
+	}
+	c.Status(204)
 }
