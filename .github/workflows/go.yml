@@ -20,12 +20,13 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.22.1'
+          cache: 'true'
 
       - name: Build
-        run: go build -v ./...
+        run: go build -v -o ./build/arch-go ./cmd/
 
       - name: Prepare for testing
         run: docker compose -f deployments/docker-compose.keycloak.yml up -d
 
       - name: Test
-        run: go test -v ./...
+        run: go test -v ./test
