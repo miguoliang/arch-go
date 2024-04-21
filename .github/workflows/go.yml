@@ -13,6 +13,16 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: quay.io/keycloak/keycloak:24.0.3
+        cmd: start-dev --http-relative-path=/auth
+        env:
+          KEYCLOAK_ADMIN: admin
+          KEYCLOAK_ADMIN_PASSWORD: admin
+        ports:
+          - 8080:8080
+        options: --health-cmd "curl -f http://localhost:8080/auth/realms/master" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v3
 
