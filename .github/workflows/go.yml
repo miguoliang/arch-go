@@ -35,15 +35,8 @@ jobs:
       - name: Prepare for testing
         run: docker-compose -f deployments/docker-compose.keycloak.yml up -d
 
-      - name: Check the deployed service URL
-        uses: jtalk/url-health-check-action@v4
-        with:
-          # Check the following URLs one by one sequentially
-          url: http://localhost:8080/auth/health/ready
-          # Fail this action after this many failed attempts
-          max-attempts: 15 # Optional, defaults to 1
-          # Delay between retries
-          retry-delay: 5s # Optional, only applicable to max-attempts > 1
+      - name: Wait for healthchecks
+        run: timeout 60s sh -c 'until docker ps | grep keycloak | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 2; done'
 
       - name: Test
         run: go test -v ./test
