@@ -88,7 +88,7 @@ func CreateRoleHandler(c *gin.Context) {
 // @Router /roles/{roleId} [delete]
 func DeleteRoleHandler(c *gin.Context) {
 	service := keycloak.NewRoleService(CustomRealmName)
-	roleId := c.Param("roleId")
+	roleId := c.Param("id")
 	statusCode, err := service.DeleteRole(roleId)
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
@@ -116,7 +116,7 @@ func UpdateRoleHandler(c *gin.Context) {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-	roleId := c.Param("roleId")
+	roleId := c.Param("id")
 	r, statusCode, err := service.UpdateRole(roleId, &role)
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})

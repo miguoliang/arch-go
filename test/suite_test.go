@@ -65,6 +65,13 @@ func (s *Suite) Post(url string, body interface{}) *httptest.ResponseRecorder {
 	return w
 }
 
+func (s *Suite) Put(url string, body interface{}) *httptest.ResponseRecorder {
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", url, str.StructToJsonReader(body))
+	s.r.ServeHTTP(w, req)
+	return w
+}
+
 func (s *Suite) Delete(url string) *httptest.ResponseRecorder {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("DELETE", url, nil)

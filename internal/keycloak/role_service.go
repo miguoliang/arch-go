@@ -10,6 +10,7 @@ import (
 type RoleService interface {
 	ListRoles() (*[]keycloakadminclient.RoleRepresentation, int, error)
 	GetRoleById(roleId string) (*keycloakadminclient.RoleRepresentation, int, error)
+	GetRoleByName(roleName string) (*keycloakadminclient.RoleRepresentation, int, error)
 	CreateRole(role *keycloakadminclient.RoleRepresentation) (string, int, error)
 	UpdateRole(roleId string, role *keycloakadminclient.RoleRepresentation) (*keycloakadminclient.RoleRepresentation, int, error)
 	DeleteRole(roleId string) (int, error)
@@ -56,6 +57,19 @@ func (r *roleService) GetRoleById(roleId string) (*keycloakadminclient.RoleRepre
 	return role, statusCode, nil
 }
 
+func (r *roleService) GetRoleByName(roleName string) (*keycloakadminclient.RoleRepresentation, int, error) {
+	roles, _, err := r.ListRoles()
+	if err != nil {
+		return nil, 500, err
+	}
+	for _, role := range *roles {
+		if *role.Name == roleName {
+			return &role, 200, nil
+		}
+	}
+	return nil, 404, fmt.Errorf("role name %s not found", roleName)
+}
+
 func (r *roleService) CreateRole(role *keycloakadminclient.RoleRepresentation) (string, int, error) {
 	h, err := r.client.RolesAPI.
 		AdminRealmsRealmRolesPost(context.Background(), r.realmName).
@@ -73,10 +87,11 @@ func (r *roleService) CreateRole(role *keycloakadminclient.RoleRepresentation) (
 		return "", h.StatusCode, fmt.Errorf("unexpected status code: %d", h.StatusCode)
 	}
 
-	location := h.Header.Get("Location")
-	roleId := location[len(location)-36:]
-
-	return roleId, statusCode, nil
+	newRole, statusCode, err := r.GetRoleByName(*role.Name)
+	if err != nil {
+		return "", statusCode, err
+	}
+	return newRole.GetId(), 201, nil
 }
 
 func (r *roleService) UpdateRole(roleId string, role *keycloakadminclient.RoleRepresentation) (*keycloakadminclient.RoleRepresentation, int, error) {
