@@ -10,7 +10,7 @@ services:
     ports:
       - 8080:8080
     healthcheck:
-      test: [ "CMD", "curl", "--head","fsS", "http://localhost:8080/health/ready" ]
+      test: [ "CMD", "curl", "--head","fsS", "http://localhost:8080/auth/health/ready" ]
       interval: 5s
       timeout: 2s
       retries: 15
