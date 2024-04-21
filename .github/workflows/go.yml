@@ -32,6 +32,9 @@ jobs:
         with:
           key: ${{ runner.os }}-docker-${{ hashFiles('**/docker-compose.keycloak.yml') }}
 
+      - name: Prepare for testing
+        run: docker-compose -f deployments/docker-compose.keycloak.yml up -d
+
       - name: Check the deployed service URL
         uses: jtalk/url-health-check-action@v4
         with:
@@ -41,9 +44,6 @@ jobs:
           max-attempts: 3 # Optional, defaults to 1
           # Delay between retries
           retry-delay: 5s # Optional, only applicable to max-attempts > 1
-
-      - name: Prepare for testing
-        run: docker-compose -f deployments/docker-compose.keycloak.yml up -d
 
       - name: Test
         run: go test -v ./test
