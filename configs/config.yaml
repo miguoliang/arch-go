@@ -1,0 +1,9 @@
+keycloak:
+  url: http://localhost:8080/auth
+  custom:
+    realm: custom
+  admin:
+    realm: master
+    client-id: admin-cli
+    username: admin
+    password: admin

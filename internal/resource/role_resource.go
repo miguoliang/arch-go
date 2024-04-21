@@ -19,7 +19,7 @@ import (
 // @Failure 404
 // @Router /roles/{roleId} [get]
 func GetRoleHandler(c *gin.Context) {
-	service := keycloak.NewRoleService(RealmName)
+	service := keycloak.NewRoleService(CustomRealmName)
 	roleId := c.Param("roleId")
 	role, statusCode, err := service.GetRoleById(roleId)
 	if err != nil {
@@ -40,7 +40,7 @@ func GetRoleHandler(c *gin.Context) {
 // @Failure 404
 // @Router /roles [get]
 func ListRolesHandler(c *gin.Context) {
-	service := keycloak.NewRoleService(RealmName)
+	service := keycloak.NewRoleService(CustomRealmName)
 	roles, statusCode, err := service.ListRoles()
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
@@ -61,7 +61,7 @@ func ListRolesHandler(c *gin.Context) {
 // @Failure 409
 // @Router /roles [post]
 func CreateRoleHandler(c *gin.Context) {
-	service := keycloak.NewRoleService(RealmName)
+	service := keycloak.NewRoleService(CustomRealmName)
 	var role keycloakadminclient.RoleRepresentation
 	if err := c.ShouldBindJSON(&role); err != nil {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
@@ -87,7 +87,7 @@ func CreateRoleHandler(c *gin.Context) {
 // @Failure 404
 // @Router /roles/{roleId} [delete]
 func DeleteRoleHandler(c *gin.Context) {
-	service := keycloak.NewRoleService(RealmName)
+	service := keycloak.NewRoleService(CustomRealmName)
 	roleId := c.Param("roleId")
 	statusCode, err := service.DeleteRole(roleId)
 	if err != nil {
@@ -110,7 +110,7 @@ func DeleteRoleHandler(c *gin.Context) {
 // @Failure 404
 // @Router /roles/{roleId} [put]
 func UpdateRoleHandler(c *gin.Context) {
-	service := keycloak.NewRoleService(RealmName)
+	service := keycloak.NewRoleService(CustomRealmName)
 	var role keycloakadminclient.RoleRepresentation
 	if err := c.ShouldBindJSON(&role); err != nil {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
@@ -137,7 +137,7 @@ func UpdateRoleHandler(c *gin.Context) {
 // @Failure 404
 // @Router /roles/check [get]
 func CheckRoleHandler(c *gin.Context) {
-	service := keycloak.NewRoleService(RealmName)
+	service := keycloak.NewRoleService(CustomRealmName)
 	roleName := c.Query("roleName")
 	statusCode, _ := service.CheckRoleName(roleName)
 	c.Status(statusCode)

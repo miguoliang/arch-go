@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/miguoliang/keycloakadminclient"
+	"github.com/spf13/viper"
 	"io"
 	"log"
 	"net/http"
@@ -13,12 +14,12 @@ import (
 	"time"
 )
 
-const (
-	keycloakServerURL = "http://localhost:8080/auth"
-	realmName         = "master"
-	clientID          = "admin-cli"
-	username          = "admin"
-	password          = "admin"
+var (
+	keycloakServerURL = viper.GetString("keycloak.url")
+	realmName         = viper.GetString("keycloak.admin.realm")
+	clientID          = viper.GetString("keycloak.admin.client-id")
+	username          = viper.GetString("keycloak.admin.username")
+	password          = viper.GetString("keycloak.admin.password")
 )
 
 var (

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	_ "github.com/miguoliang/arch-go/configs"
 	"github.com/miguoliang/arch-go/internal/resource"
 	"gopkg.in/Graylog2/go-gelf.v2/gelf"
 	"io"
@@ -12,47 +12,6 @@ import (
 const (
 	graylogAddr = "localhost:12201"
 )
-
-func setupRoutes() *gin.Engine {
-
-	r := gin.Default()
-
-	api := r.Group("/api/v1")
-
-	api.Group("/users").
-		DELETE("/:id", resource.DeleteUserHandler).
-		DELETE("/:id/groups/:groupId", resource.LeaveGroupHandler).
-		GET("/", resource.ListUsersHandler).
-		GET("/:id", resource.GetUserHandler).
-		GET("/:id/groups", resource.ListGroupsByUserHandler).
-		HEAD("/", resource.CheckUserHandler).
-		POST("/", resource.CreateUserHandler).
-		POST("/:id/groups/:groupId", resource.JoinGroupHandler).
-		PUT("/:id", resource.UpdateUserHandler)
-
-	api.Group("/groups").
-		DELETE("/:id", resource.DeleteGroupHandler).
-		GET("/", resource.ListGroupsHandler).
-		GET("/:id", resource.GetGroupHandler).
-		POST("/", resource.CreateGroupHandler).
-		PUT("/:id", resource.UpdateGroupHandler)
-
-	api.Group("/roles").
-		DELETE("/:id", resource.DeleteRoleHandler).
-		GET("/", resource.ListRolesHandler).
-		GET("/:id", resource.GetRoleHandler).
-		HEAD("/", resource.CheckRoleHandler).
-		POST("/", resource.CreateRoleHandler).
-		POST("/:id", resource.UpdateRoleHandler)
-
-	api.POST("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"error": 0,
-		})
-	})
-
-	return r
-}
 
 // @title Arch-Go API
 // @description This is the API for Arch-Go
@@ -68,7 +27,7 @@ func main() {
 
 	setupLog()
 
-	r := setupRoutes()
+	r := resource.SetupRoutes()
 
 	err := r.Run("0.0.0.0:8081")
 	if err != nil {

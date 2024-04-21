@@ -8,10 +8,6 @@ import (
 	"net/http"
 )
 
-const (
-	RealmName = "master"
-)
-
 // ListGroupsHandler List groups
 // @Summary List groups
 // @Description List groups
@@ -22,7 +18,7 @@ const (
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups [get]
 func ListGroupsHandler(c *gin.Context) {
-	service := keycloak.NewGroupService(RealmName)
+	service := keycloak.NewGroupService(CustomRealmName)
 	groups, statusCode, err := service.ListGroups()
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
@@ -42,7 +38,7 @@ func ListGroupsHandler(c *gin.Context) {
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups/{id} [get]
 func GetGroupHandler(c *gin.Context) {
-	service := keycloak.NewGroupService(RealmName)
+	service := keycloak.NewGroupService(CustomRealmName)
 	groupId := c.Param("id")
 	group, statusCode, err := service.GetGroup(groupId)
 	if err != nil {
@@ -67,7 +63,7 @@ func CreateGroupHandler(c *gin.Context) {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-	service := keycloak.NewGroupService(RealmName)
+	service := keycloak.NewGroupService(CustomRealmName)
 	groupId, statusCode, err := service.CreateGroup(&group)
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
@@ -93,7 +89,7 @@ func UpdateGroupHandler(c *gin.Context) {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
 		return
 	}
-	service := keycloak.NewGroupService(RealmName)
+	service := keycloak.NewGroupService(CustomRealmName)
 	groupId := c.Param("id")
 	statusCode, err := service.UpdateGroup(groupId, &group)
 	if err != nil {
@@ -114,7 +110,7 @@ func UpdateGroupHandler(c *gin.Context) {
 // @Failure 500 {object} dto.ErrorResponse
 // @Router /groups/{id} [delete]
 func DeleteGroupHandler(c *gin.Context) {
-	service := keycloak.NewGroupService(RealmName)
+	service := keycloak.NewGroupService(CustomRealmName)
 	groupId := c.Param("id")
 	statusCode, err := service.DeleteGroup(groupId)
 	if err != nil {

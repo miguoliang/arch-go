@@ -20,7 +20,7 @@ import (
 // @Failure 404 {object} dto.ErrorResponse
 // @Router /users/{id} [get]
 func GetUserHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	userID := c.Param("id")
 	user, statusCode, err := service.GetUserById(userID)
 	if err != nil {
@@ -42,7 +42,7 @@ func GetUserHandler(c *gin.Context) {
 // @Failure 409 {object} dto.ErrorResponse
 // @Router /users [post]
 func CreateUserHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	var user keycloakadminclient.UserRepresentation
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
@@ -69,7 +69,7 @@ func CreateUserHandler(c *gin.Context) {
 // @Failure 404 {object} dto.ErrorResponse
 // @Router /users/{id} [put]
 func UpdateUserHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	var user keycloakadminclient.UserRepresentation
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, dto.ErrorResponse{Message: err.Error()})
@@ -95,7 +95,7 @@ func UpdateUserHandler(c *gin.Context) {
 // @Failure 400 {object} dto.ErrorResponse
 // @Router /users/{id} [delete]
 func DeleteUserHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	userID := c.Param("id")
 	statusCode, err := service.DeleteUser(userID)
 	if err != nil {
@@ -115,7 +115,7 @@ func DeleteUserHandler(c *gin.Context) {
 // @Failure 400 {object} dto.ErrorResponse
 // @Router /users [get]
 func ListUsersHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	users, statusCode, err := service.ListUsers()
 	if err != nil {
 		c.JSON(statusCode, dto.ErrorResponse{Message: err.Error()})
@@ -136,7 +136,7 @@ func ListUsersHandler(c *gin.Context) {
 // @Failure 400 {object} dto.ErrorResponse
 // @Router /users/{id}/groups/{groupId} [post]
 func JoinGroupHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	userID := c.Param("id")
 	groupID := c.Param("groupId")
 	statusCode, err := service.JoinGroup(userID, groupID)
@@ -159,7 +159,7 @@ func JoinGroupHandler(c *gin.Context) {
 // @Failure 400 {object} dto.ErrorResponse
 // @Router /users/{id}/groups/{groupId} [delete]
 func LeaveGroupHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	userID := c.Param("id")
 	groupID := c.Param("groupId")
 	statusCode, err := service.LeaveGroup(userID, groupID)
@@ -180,7 +180,7 @@ func LeaveGroupHandler(c *gin.Context) {
 // @Success 200 {array} keycloakadminclient.GroupRepresentation
 // @Failure 400 {object} dto.ErrorResponse
 func ListGroupsByUserHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	userID := c.Param("id")
 	groups, statusCode, err := service.ListGroups(userID)
 	if err != nil {
@@ -201,7 +201,7 @@ func ListGroupsByUserHandler(c *gin.Context) {
 // @Failure 404
 // @Router /users [head]
 func CheckUserHandler(c *gin.Context) {
-	service := keycloak.NewUserService(RealmName)
+	service := keycloak.NewUserService(CustomRealmName)
 	username := c.Query("username")
 	user, statusCode, err := service.GetUserByUsername(username)
 	if err != nil {
