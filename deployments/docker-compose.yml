@@ -4,6 +4,13 @@ include:
   - docker-compose.metrics.yml
 
 services:
+  api:
+    image: miguoliang/arch-go
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8080
   kong-gateway:
     image: kong/kong-gateway
     command: bash -c "kong migrations bootstrap -v && kong start"

@@ -155,6 +155,18 @@ func (s *RoleTestSuite) TestCheckRoleNameSuccess() {
 	s.Equal(204, w.Code)
 }
 
+func (s *RoleTestSuite) TestCheckRoleNameConflict() {
+
+	role := &keycloakadminclient.RoleRepresentation{
+		Name: str.Ptr(s.T().Name()),
+	}
+	w := s.Post("/api/v1/roles", role)
+	s.Equal(201, w.Code)
+
+	w = s.Head("/api/v1/roles?roleName=" + s.T().Name())
+	s.Equal(409, w.Code)
+}
+
 func (s *RoleTestSuite) TestCheckRoleNameNotFound() {
 
 	w := s.Head("/api/v1/roles?roleName=" + "not-exist")
